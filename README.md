@@ -14,7 +14,11 @@
 
 	train_frame = pd.DataFrame(...)
 	test_frame  = pd.DataFrame(...)
-	fh 	    = FeatureHandler(train_frame)
+
+	class_dict = {'feature1':'numerical, 'feature2':'categorical', 'feature3':'rank', ...}
+	rank_dict  = {'feature3':{'f31':0, 'f32':1, 'f33':2, ...}
+
+	fh 	    = FeatureHandler(train_frame, class_dict, rank_dict = rank_dict)
 	train_frame = fh.fit_transform()	# fit encodings to training data
 	test_frame  = fh.transform(test_frame)	# transform testing data
 
