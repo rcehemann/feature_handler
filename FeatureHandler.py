@@ -256,8 +256,8 @@ class FeatureHandler:
             assert 'rank_dict' in self.kwargs, "Use of ranked features requires a nested dictionary containing rankings for each"
                 
         for column in self.rank_columns:
-
-            self.rank_frame.loc[:,column] = self.rank_frame[column].apply(lambda x: float(self.kwargs['rank_dict'][column][x]))
+            maxcol = max(list(self.kwargs['rank_dict'][column].values()))
+            self.rank_frame.loc[:,column] = self.rank_frame[column].apply(lambda x: float(self.kwargs['rank_dict'][column][x])/maxcol)
             
         return self
     
