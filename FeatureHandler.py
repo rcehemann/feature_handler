@@ -108,6 +108,8 @@ class FeatureHandler:
         if len(self.rank_columns) > 0:        
             # transform rank columns
             self.__transform_rank()
+            
+            # do nothing to leave columns
 
         # recombine
         del input_frame
@@ -124,6 +126,7 @@ class FeatureHandler:
         self.numerical_columns   = []
         self.categorical_columns = []
         self.rank_columns        = []
+        self.leave_columns       = []
         for column in self.dataFrame.columns.values:
             c = self.class_dict[column][0].upper()
             if   c == 'N':
@@ -132,6 +135,8 @@ class FeatureHandler:
                 self.categorical_columns.append(column)
             elif c == 'R':
                 self.rank_columns.append(column)
+            elif c == 'L':
+                self.leave_columns.append(column)
             else:
                 raise Exception('Class ' + c + ' is invalid')
         
@@ -139,6 +144,7 @@ class FeatureHandler:
         self.numerical_frame    = self.dataFrame.loc[:, self.numerical_columns]
         self.categorical_frame  = self.dataFrame.loc[:, self.categorical_columns]
         self.rank_frame         = self.dataFrame.loc[:, self.rank_columns]
+        self.leave_frame        = self.dataFrame.loc[:, self.leave_columns]
         
         
         
@@ -153,6 +159,7 @@ class FeatureHandler:
         self.numerical_frame    = input_frame.loc[:, self.numerical_columns]
         self.categorical_frame  = input_frame.loc[:, self.categorical_columns]
         self.rank_frame         = input_frame.loc[:, self.rank_columns]
+        self.leave_frame        = input_frame.loc[:, self.leave_columns]
         
         return self
     
@@ -161,12 +168,13 @@ class FeatureHandler:
     def __recombine_frames(self):
         
         # concatenate frames, overwriting self.dataFrame
-        frame = pd.concat([self.numerical_frame, self.categorical_frame, self.rank_frame], axis=1)
+        frame = pd.concat([self.numerical_frame, self.categorical_frame, self.rank_frame, self.leave_frame], axis=1)
         
         # clean up temporary frames
         del self.numerical_frame
         del self.categorical_frame
         del self.rank_frame
+        del self.leave_frame
         
         return frame   
         
@@ -219,8 +227,7 @@ class FeatureHandler:
             # drop original feature and merge one-hot features into categorical frame
             self.categorical_frame = pd.concat([self.categorical_frame, pd.DataFrame(ohe_col, columns=newnames)], axis=1)
             self.categorical_frame.drop(column, axis=1, inplace=True)
-
-            
+           
         return self
     
     #%%
